@@ -1,0 +1,87 @@
+<?xml version="1.0"?>
+<block>
+  <name>pfb_oqpsk_clock_sync_cc</name>
+  <key>oqpsk_pfb_oqpsk_clock_sync_cc</key>
+  <category>oqpsk</category>
+  <import>import oqpsk</import>
+  <make>oqpsk.pfb_oqpsk_clock_sync_cc($sps, $loop_bw, $taps, $filter_size, $init_phase, $max_rate_deviation)</make>
+  <callback>update_taps($taps)</callback>
+  <callback>set_loop_bandwidth($loop_bw)</callback>
+  <!-- Make one 'param' node for every Parameter you want settable from the GUI.
+       Sub-nodes:
+       * name
+       * key (makes the value accessible as $keyname, e.g. in the make node)
+       * type -->
+  <param>
+    <name>Samples/Symbol</name>
+    <key>sps</key>
+    <type>real</type>
+  </param>
+  <param>
+    <name>Loop Bandwidth</name>
+    <key>loop_bw</key>
+    <type>real</type>
+  </param>
+  <param>
+    <name>Taps</name>
+    <key>taps</key>
+    <type>real_vector</type>
+  </param>
+  <param>
+    <name>No of filters</name>
+    <key>filter_size</key>
+    <value>32</value>
+    <type>int</type>
+  </param>
+  <param>
+    <name>Initial Phase</name>
+    <key>init_phase</key>
+    <type>real</type>
+  </param>
+  <param>
+    <name>Max Rate Deviation</name>
+    <key>max_rate_deviation</key>
+    <type>real</type>
+  </param>
+  
+
+  <!-- Make one 'sink' node per input. Sub-nodes:
+       * name (an identifier for the GUI)
+       * type
+       * vlen
+       * optional (set to 1 for optional inputs) -->
+  <sink>
+    <name>in</name>
+    <type>complex</type>
+  </sink>
+
+  <!-- Make one 'source' node per output. Sub-nodes:
+       * name (an identifier for the GUI)
+       * type
+       * vlen
+       * optional (set to 1 for optional inputs) -->
+  <source>
+    <name>out</name>
+    <type>complex</type>
+  </source>
+  <source>
+    <name>out1</name>
+    <type>complex</type>
+  </source>
+  <source>
+    <name>error</name>
+    <type>float</type>
+    <optional>1</optional>
+  </source>
+  <source>
+    <name>freq</name>
+    <type>float</type>
+    <optional>1</optional>
+  </source>
+  <source>
+    <name>phase</name>
+    <type>float</type>
+    <optional>1</optional>
+  </source>
+  
+</block>
