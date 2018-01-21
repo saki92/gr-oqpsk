@@ -83,7 +83,7 @@ namespace gr {
       // The accumulator keeps track of overflow to increment the stride correctly.
       // set it here to the fractional difference based on the initial phaes
       d_k_r = init_phase; //filter no. for real part
-      d_k_r = init_phase;
+      d_k_i = init_phase;
       //d_k_i = init_phase + d_nfilters/(0.5*d_sps); //filter no. for imag part
       d_rate = (sps-floor(sps))*(double)d_nfilters;
       d_rate_r_i = (int)floor(d_rate);
@@ -469,7 +469,6 @@ namespace gr {
       }
 
       int i = 0, count_r = 0, count_i = count_r + d_count_dist;
-      count_i = 0;
 
       // produce output as long as we can and there are enough input samples
       while(i < noutput_items) {
@@ -508,13 +507,12 @@ namespace gr {
         }
 
         if(count_i <= noi) {
-          //out[i].real(d_filters[d_filtnum_r]->filter(&in_real[count_r]));
-          //out[i].imag(d_filters[d_filtnum_i]->filter(&in_imag[count_i]));
-          out[i].real(in_real[count_r]);
-          out[i].imag(in_imag[count_i]);
+          out[i].real(d_filters[d_filtnum_r]->filter(&in_real[count_r]));
+          out[i].imag(d_filters[d_filtnum_i]->filter(&in_imag[count_i]));
+          
           //co sample output needed for phase estimation (following block)
-          out1[i].real(in_real[count_i]);
-          out1[i].imag(in_imag[count_r]);
+          out1[i].real(d_filters[d_filtnum_i]->filter(&in_imag[count_i]));
+          out1[i].imag(d_filters[d_filtnum_r]->filter(&in_real[count_r]));
         }
         else {
           consume_each(count_r);
@@ -529,7 +527,7 @@ namespace gr {
 
 
         if(output_items.size() == 5) {
-          err[i] = d_error_r;
+          err[i] = count_i - count_r;
           outrate[i] = d_rate_r_f;
           outk[i] = d_k_r;
         }
