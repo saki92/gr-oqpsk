@@ -468,12 +468,11 @@ namespace gr {
 	outk = (float*)output_items[3];
       }
 
-      int i = 0, count_r = 0, count_i = count_r + d_count_dist;
+      int i = 0, count = 0;
 
       // produce output as long as we can and there are enough input samples
       while(i < noutput_items) {
         d_filtnum_r = (int)floor(d_k_r);
-        d_filtnum_i = (int)floor(d_k_i);
 
         // Keep the current filter number in [0, d_nfilters]
         // If we've run beyond the last filter, wrap around and go to next sample
@@ -481,63 +480,41 @@ namespace gr {
         while(d_filtnum_r >= d_nfilters) {
           d_k_r -= d_nfilters;
           d_filtnum_r -= d_nfilters;
-          count_r += 1;
+          count += 1;
         }
         while(d_filtnum_r < 0) {
           d_k_r += d_nfilters;
           d_filtnum_r += d_nfilters;
-          count_r -= 1;
-        }
-        
-        while(d_filtnum_i >= d_nfilters) {
-          d_k_i -= d_nfilters;
-          d_filtnum_i -= d_nfilters;
-          count_i += 1;
-        }
-        while(d_filtnum_i < 0) {
-          d_k_i += d_nfilters;
-          d_filtnum_i += d_nfilters;
-          count_i -= 1;
-        }
-        
-        //to always keep Q sample ahead of I sample,
-        //and within one symbol distance
-        if(count_i <= count_r  ||  count_i >= count_r + (int)floor(d_sps)) {
-          count_i = count_r + (int)floor(d_sps/2);
+          count -= 1;
         }
 
-        if(count_i <= noi) {
-          out[i].real(d_filters[d_filtnum_r]->filter(&in_real[count_r]));
-          out[i].imag(d_filters[d_filtnum_i]->filter(&in_imag[count_i]));
+        if(count+d_count_dist <= noi) {
+          out[i].real(d_filters[d_filtnum_r]->filter(&in_real[count]));
+          out[i].imag(d_filters[d_filtnum_i]->filter(&in_imag[count+d_count_dist]));
           
           //co sample output needed for phase estimation (following block)
-          out1[i].real(d_filters[d_filtnum_i]->filter(&in_imag[count_i]));
-          out1[i].imag(d_filters[d_filtnum_r]->filter(&in_real[count_r]));
+          out1[i].real(d_filters[d_filtnum_i]->filter(&in_imag[count+d_count_dist]));
+          out1[i].imag(d_filters[d_filtnum_r]->filter(&in_real[count]));
         }
         else {
-          consume_each(count_r);
-          d_count_dist = count_i - count_r;
+          consume_each(count);
           volk_free(in_real);
           volk_free(in_imag);
           return i;
         }
           
         d_k_r = d_k_r + d_rate_r_i + d_rate_r_f; // update phase
-        d_k_i = d_k_i + d_rate_i_i + d_rate_i_f;
-
 
         if(output_items.size() == 5) {
-          err[i] = count_i - count_r;
+          err[i] = d_error_r;
           outrate[i] = d_rate_r_f;
           outk[i] = d_k_r;
         }
 
 	// Update the phase and rate estimates for this symbol
         float diff_r, diff_i;
-	diff_r = d_diff_filters[d_filtnum_r]->filter(&in_real[count_r]);
-	diff_i = d_diff_filters[d_filtnum_i]->filter(&in_imag[count_i]);
+	diff_r = d_diff_filters[d_filtnum_r]->filter(&in_real[count]);
 	d_error_r = out[i].real() * diff_r; // error of Q channel
-	d_error_i = out[i].imag() * diff_i; // error of I channel
 
         // Run the control loop to update the current phase (k) and
         // tracking rate estimates based on the error value
@@ -545,20 +522,15 @@ namespace gr {
         for(int s = 0; s < d_sps; s++) {
           d_rate_r_f = d_rate_r_f + d_beta*d_error_r;
           d_k_r = d_k_r + d_rate_r_f + d_alpha*d_error_r;
-          d_rate_i_f = d_rate_i_f + d_beta*d_error_i;
-          d_k_i = d_k_i + d_rate_i_f + d_alpha*d_error_i;
         }
 
 	// Keep our rate within a good range
 	d_rate_r_f = gr::branchless_clip(d_rate_r_f, d_max_dev);
-	d_rate_i_f = gr::branchless_clip(d_rate_i_f, d_max_dev);
 
 	i+=d_osps;
-	count_r += (int)floor(d_sps);
-	count_i += (int)floor(d_sps);
+	count += (int)floor(d_sps);
       }
 
-      d_count_dist = count_i - count_r;
       consume_each(count_r);
       volk_free(in_real);
       volk_free(in_imag);
