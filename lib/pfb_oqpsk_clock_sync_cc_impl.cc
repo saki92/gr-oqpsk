@@ -512,7 +512,7 @@ namespace gr {
         }
 
 	// Update the phase and rate estimates for this symbol
-        float diff_r, diff_i;
+        float diff_r;
 	diff_r = d_diff_filters[d_filtnum_r]->filter(&in_real[count]);
 	d_error_r = out[i].real() * diff_r; // error of Q channel
 
@@ -531,7 +531,7 @@ namespace gr {
 	count += (int)floor(d_sps);
       }
 
-      consume_each(count_r);
+      consume_each(count);
       volk_free(in_real);
       volk_free(in_imag);
       return i;
