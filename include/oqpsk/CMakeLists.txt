@@ -23,5 +23,6 @@
 install(FILES
     api.h
     pfb_oqpsk_clock_sync_cc.h
-    oqpsk_phase_sync_cc.h DESTINATION include/oqpsk
+    oqpsk_phase_sync_cc.h
+    oqpsk_phase_clock_est_cc.h DESTINATION include/oqpsk
 )

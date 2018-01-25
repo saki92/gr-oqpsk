@@ -28,6 +28,7 @@ link_directories(${Boost_LIBRARY_DIRS})
 list(APPEND oqpsk_sources
     pfb_oqpsk_clock_sync_cc_impl.cc
     oqpsk_phase_sync_cc_impl.cc
+    oqpsk_phase_clock_est_cc_impl.cc
 )
 
 set(oqpsk_sources "${oqpsk_sources}" PARENT_SCOPE)

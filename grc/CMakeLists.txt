@@ -19,5 +19,6 @@
 
 install(FILES
     oqpsk_pfb_oqpsk_clock_sync_cc.xml
-    oqpsk_oqpsk_phase_sync_cc.xml DESTINATION share/gnuradio/grc/blocks
+    oqpsk_oqpsk_phase_sync_cc.xml
+    oqpsk_oqpsk_phase_clock_est_cc.xml DESTINATION share/gnuradio/grc/blocks
 )
