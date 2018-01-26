@@ -24,6 +24,7 @@
 
 #include <oqpsk/api.h>
 #include <gnuradio/block.h>
+#include <gnuradio/filter/fir_filter.h>
 
 namespace gr {
   namespace oqpsk {
@@ -46,7 +47,8 @@ namespace gr {
        * class. oqpsk::oqpsk_phase_clock_est_cc::make is the public interface for
        * creating new instances.
        */
-      static sptr make();
+      static sptr make(double sps,
+                       const std::vector<gr_complex> &taps);
     };
 
   } // namespace oqpsk

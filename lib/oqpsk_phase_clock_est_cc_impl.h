@@ -23,19 +23,31 @@
 
 #include <oqpsk/oqpsk_phase_clock_est_cc.h>
 
+using namespace gr::filter;
+
 namespace gr {
   namespace oqpsk {
 
     class oqpsk_phase_clock_est_cc_impl : public oqpsk_phase_clock_est_cc
     {
      private:
-      // Nothing to declare in this block.
+      float                     d_phase;
+      float                     d_delay;
+      gr_complex                X, Y;
+      kernel::fir_filter_ccc    *d_q_filter;
+      std::vector<gr_complex>   d_qtaps;
+      int                       d_sps;
+      
 
      public:
-      oqpsk_phase_clock_est_cc_impl();
+      oqpsk_phase_clock_est_cc_impl(double sps,
+                                    const std::vector<gr_complex> &taps);
+                                    
       ~oqpsk_phase_clock_est_cc_impl();
 
       // Where all the action really happens
+      bool check_topology(int ninputs, int noutputs);
+      
       void forecast (int noutput_items, gr_vector_int &ninput_items_required);
 
       int general_work(int noutput_items,

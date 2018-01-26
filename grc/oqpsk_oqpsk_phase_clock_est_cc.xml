@@ -4,35 +4,41 @@
   <key>oqpsk_oqpsk_phase_clock_est_cc</key>
   <category>oqpsk</category>
   <import>import oqpsk</import>
-  <make>oqpsk.oqpsk_phase_clock_est_cc()</make>
+  <make>oqpsk.oqpsk_phase_clock_est_cc($sps, $taps)</make>
   <!-- Make one 'param' node for every Parameter you want settable from the GUI.
        Sub-nodes:
        * name
        * key (makes the value accessible as $keyname, e.g. in the make node)
        * type -->
   <param>
-    <name>...</name>
-    <key>...</key>
-    <type>...</type>
+    <name>Samples Per Symbol</name>
+    <key>sps</key>
+    <type>int</type>
+  </param>
+  <param>
+    <name>Filter Taps</name>
+    <key>taps</key>
+    <type>complex</type>
   </param>
 
-  <!-- Make one 'sink' node per input. Sub-nodes:
-       * name (an identifier for the GUI)
-       * type
-       * vlen
-       * optional (set to 1 for optional inputs) -->
   <sink>
     <name>in</name>
-    <type><!-- e.g. int, float, complex, byte, short, xxx_vector, ...--></type>
+    <type>complex</type>
   </sink>
 
-  <!-- Make one 'source' node per output. Sub-nodes:
-       * name (an identifier for the GUI)
-       * type
-       * vlen
-       * optional (set to 1 for optional inputs) -->
   <source>
     <name>out</name>
-    <type><!-- e.g. int, float, complex, byte, short, xxx_vector, ...--></type>
+    <type>complex</type>
+  </source>
+  <!-- Optional Outputs -->
+  <source>
+    <name>phase</name>
+    <type>float</type>
+    <optional>1</optional>
+  </source>
+  <source>
+    <name>delay</name>
+    <type>float</type>
+    <optional>1</optional>
   </source>
 </block>
