@@ -93,6 +93,7 @@ namespace gr {
     {
       const gr_complex *in = (const gr_complex*) input_items[0];
       gr_complex *out = (gr_complex *) output_items[0];
+      float *out1 = (float *) output_items[1];
       int noi = ninput_items[0];
 
       // Generating input for filter q(t)
@@ -124,13 +125,19 @@ namespace gr {
       est_phase = gr_expj(-d_phase);
       std::transform(in, in + nsamples, out, 
                      std::bind1st(std::multiplies<gr_complex>(),est_phase));
+      *out1 = d_phase;
+      *out2 = d_delay;
+      produce(0, nsamples);
+      produce(1, 1);
+      produce(2, 1);
+      
       
       // Tell runtime system how many input items we consumed on
       // each input stream.
-      consume_each (noutput_items);
+      consume_each (nsamples);
 
       // Tell runtime system how many output items we produced.
-      return noutput_items;
+      return WORK_CALLED_PRODUCE;
     }
 
   } /* namespace oqpsk */
