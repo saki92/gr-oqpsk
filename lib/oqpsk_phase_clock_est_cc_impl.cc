@@ -67,6 +67,8 @@ namespace gr {
       
       //creating q filter taps
       //q(t) = g(t)exp(1/2*t) (conv) g(t)exp(1/2*t)
+      unsigned int d_qtaps_n = 2 * (taps.size() - 1);
+      
       for (int j = 0; j < 2 * (taps.size() - 1); j++) {
         d_qtaps[j] = 0;
         for (int k = 0; k < j + 1; k++)
@@ -74,6 +76,7 @@ namespace gr {
       }
       d_q_filter->set_taps(d_qtaps);
       
+      unsigned int alignment = volk_get_alignment();      
       gr_complex *top_b4_filt = (gr_complex *)volk_malloc(sizeof(gr_complex)*NL0, alignment);
       gr_complex *bot_b4_filt = (gr_complex *)volk_malloc(sizeof(gr_complex)*NL0, alignment);
       gr_complex *top_aft_filt = (gr_complex *)volk_malloc(sizeof(gr_complex)*NL0, alignment);
@@ -81,7 +84,7 @@ namespace gr {
       gr_complex *top_b4_sum = (gr_complex *)volk_malloc(sizeof(gr_complex)*NL0, alignment);
       gr_complex *bot_b4_sum = (gr_complex *)volk_malloc(sizeof(gr_complex)*NL0, alignment);
       
-      set_history(d_taps_q);
+      set_history(d_qtaps_n);
       
       set_output_multiple(1);
     }
@@ -100,7 +103,7 @@ namespace gr {
       delete d_q_filter;
     }
 
-    void
+    bool
     oqpsk_phase_clock_est_cc_impl::check_topology(int ninputs, int noutputs)
     {
       return noutputs == 1 || noutputs == 3;
@@ -135,8 +138,8 @@ namespace gr {
         phase_arg = M_PI * i / noi;
         sample_phase_top = gr_expj(-phase_arg);
         sample_phase_bot = gr_expj(phase_arg);
-        top_b4_filt[i] = in * sample_phase_top;
-        bot_b4_filt[i] = in * sample_phase_bot;
+        top_b4_filt[i] = in[i] * sample_phase_top;
+        bot_b4_filt[i] = in[i] * sample_phase_bot;
       }
       
       d_q_filter->filter(nsamples, top_b4_filt, top_aft_filt);

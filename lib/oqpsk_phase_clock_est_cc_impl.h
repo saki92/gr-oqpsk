@@ -37,7 +37,12 @@ namespace gr {
       kernel::fir_filter_ccc    *d_q_filter;
       std::vector<gr_complex>   d_qtaps;
       int                       d_sps;
-      
+      gr_complex                *top_b4_filt;
+      gr_complex                *bot_b4_filt;
+      gr_complex                *top_aft_filt;
+      gr_complex                *bot_aft_filt;
+      gr_complex                *top_b4_sum;
+      gr_complex                *bot_b4_sum;
 
      public:
       oqpsk_phase_clock_est_cc_impl(double sps,
