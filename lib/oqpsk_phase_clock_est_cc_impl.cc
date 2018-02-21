@@ -81,8 +81,6 @@ namespace gr {
       gr_complex *bot_b4_filt = (gr_complex *)volk_malloc(sizeof(gr_complex)*NL0, alignment);
       gr_complex *top_aft_filt = (gr_complex *)volk_malloc(sizeof(gr_complex)*NL0, alignment);
       gr_complex *bot_aft_filt = (gr_complex *)volk_malloc(sizeof(gr_complex)*NL0, alignment);
-      gr_complex *top_b4_sum = (gr_complex *)volk_malloc(sizeof(gr_complex)*NL0, alignment);
-      gr_complex *bot_b4_sum = (gr_complex *)volk_malloc(sizeof(gr_complex)*NL0, alignment);
       
       set_history(d_qtaps_n);
       
@@ -98,8 +96,6 @@ namespace gr {
       volk_free(bot_b4_filt);
       volk_free(top_aft_filt);
       volk_free(bot_aft_filt);
-      volk_free(top_b4_sum);
-      volk_free(bot_b4_sum);
       delete d_q_filter;
     }
 
@@ -142,21 +138,21 @@ namespace gr {
         bot_b4_filt[i] = in[i] * sample_phase_bot;
       }
       
-      d_q_filter->filter(nsamples, top_b4_filt, top_aft_filt);
-      d_q_filter->filter(nsamples, bot_b4_filt, bot_aft_filt);
+      d_q_filter->filterN(top_aft_filt, top_b4_filt, nsamples);
+      d_q_filter->filterN(bot_aft_filt, bot_b4_filt, nsamples);
       
-      X = std::inner_product(top_aft_filt, top_aft_filt + nsamples, top_b4_filt,
-                             top_b4_sum, 0);
-      Y = std::inner_product(bot_aft_filt, bot_aft_filt + nsamples, bot_b4_filt,
-                             bot_b4_sum, 0);
+      X = std::inner_product(top_aft_filt, top_aft_filt + nsamples, top_b4_filt, gr_complex());
+      Y = std::inner_product(bot_aft_filt, bot_aft_filt + nsamples, bot_b4_filt, gr_complex());
       
       d_phase = 1 / 4 * (atan2(X.imag(), X.real()) + atan2(Y.imag(), Y.real()));
       d_delay = 1 / (4 * M_PI) * (-atan2(X.imag(), X.real()) + atan2(Y.imag(), Y.real()));
       
       gr_complex est_phase;
       est_phase = gr_expj(-d_phase);
-      std::transform(in, in + nsamples, out, 
-                     std::bind1st(std::multiplies<gr_complex>(),est_phase));
+      //std::transform(in, in + nsamples, out, 
+      //               std::bind1st(std::multiplies<gr_complex>(),est_phase));
+      std::vector <gr_complex> est_phase_vec (nsamples, est_phase);
+      std::transform(in, in+nsamples, est_phase_vec.begin(), out, std::multiplies<gr_complex>());
       *out1 = d_phase;
       *out2 = d_delay;
       produce(0, nsamples);
