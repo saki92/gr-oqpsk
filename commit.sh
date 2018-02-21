@@ -1,3 +1,4 @@
+set -x
 git add .
 git reset -- build/
 echo "Enter a commit message:"

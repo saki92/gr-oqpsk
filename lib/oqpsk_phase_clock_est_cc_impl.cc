@@ -80,7 +80,7 @@ namespace gr {
       gr_complex *top_b4_filt = (gr_complex *)volk_malloc(sizeof(gr_complex)*NL0, alignment);
       gr_complex *bot_b4_filt = (gr_complex *)volk_malloc(sizeof(gr_complex)*NL0, alignment);
       gr_complex *top_aft_filt = (gr_complex *)volk_malloc(sizeof(gr_complex)*NL0, alignment);
-      gr_complex *bot_aft_filt = (gr_complex *)volk_malloc(sizeof(gr_complex)*NL0, alignment);
+      gr_complex *bot_aft_filt = (gr_complex *)volk_malloc(sizeof(gr_complex)*NL0, alignment);  
       
       set_history(d_qtaps_n);
       
@@ -149,8 +149,6 @@ namespace gr {
       
       gr_complex est_phase;
       est_phase = gr_expj(-d_phase);
-      //std::transform(in, in + nsamples, out, 
-      //               std::bind1st(std::multiplies<gr_complex>(),est_phase));
       std::vector <gr_complex> est_phase_vec (nsamples, est_phase);
       std::transform(in, in+nsamples, est_phase_vec.begin(), out, std::multiplies<gr_complex>());
       *out1 = d_phase;
