@@ -13,12 +13,12 @@
   <param>
     <name>Samples Per Symbol</name>
     <key>sps</key>
-    <type>int</type>
+    <type>real</type>
   </param>
   <param>
     <name>Filter Taps</name>
     <key>taps</key>
-    <type>float</type>
+    <type>real_vector</type>
   </param>
 
   <sink>
