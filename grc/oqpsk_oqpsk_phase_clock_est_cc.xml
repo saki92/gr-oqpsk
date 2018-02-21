@@ -18,7 +18,7 @@
   <param>
     <name>Filter Taps</name>
     <key>taps</key>
-    <type>complex</type>
+    <type>float</type>
   </param>
 
   <sink>

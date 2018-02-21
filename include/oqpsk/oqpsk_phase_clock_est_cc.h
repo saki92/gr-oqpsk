@@ -48,7 +48,7 @@ namespace gr {
        * creating new instances.
        */
       static sptr make(double sps,
-                       const std::vector<gr_complex> &taps);
+                       const std::vector<float> &taps);
     };
 
   } // namespace oqpsk

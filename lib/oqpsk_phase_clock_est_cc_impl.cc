@@ -41,7 +41,7 @@ namespace gr {
 
     oqpsk_phase_clock_est_cc::sptr
     oqpsk_phase_clock_est_cc::make(double sps,
-                                   const std::vector<gr_complex> &taps)
+                                   const std::vector<float> &taps)
     {
       return gnuradio::get_initial_sptr
         (new oqpsk_phase_clock_est_cc_impl(sps, taps));
@@ -53,9 +53,9 @@ namespace gr {
     static int ios[] = {sizeof(gr_complex), sizeof(float), sizeof(float)};
     static std::vector<int> iosig(ios, ios+sizeof(ios)/sizeof(int));
     oqpsk_phase_clock_est_cc_impl::oqpsk_phase_clock_est_cc_impl(double sps,
-                                                                 const std::vector<gr_complex> &taps)
+                                                                 const std::vector<float> &taps)
       : gr::block("oqpsk_phase_clock_est_cc",
-              gr::io_signature::make(1, 1, sizeof(gr_complex)),
+              gr::io_signature::make(1, 1, sizeof(float)),
               gr::io_signature::makev(1, 3, iosig))
     {
       if(taps.size() == 0)

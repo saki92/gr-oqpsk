@@ -46,7 +46,7 @@ namespace gr {
 
      public:
       oqpsk_phase_clock_est_cc_impl(double sps,
-                                    const std::vector<gr_complex> &taps);
+                                    const std::vector<float> &taps);
                                     
       ~oqpsk_phase_clock_est_cc_impl();
 
