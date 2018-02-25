@@ -65,10 +65,6 @@
     <type>complex</type>
   </source>
   <source>
-    <name>out1</name>
-    <type>complex</type>
-  </source>
-  <source>
     <name>error</name>
     <type>float</type>
     <optional>1</optional>

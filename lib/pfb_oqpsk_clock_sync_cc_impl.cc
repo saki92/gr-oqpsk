@@ -48,7 +48,7 @@ namespace gr {
     /*
      * The private constructor
      */
-    static int ios[] = {sizeof(gr_complex), sizeof(gr_complex), sizeof(float), sizeof(float), sizeof(float)};
+    static int ios[] = {sizeof(gr_complex), sizeof(float), sizeof(float), sizeof(float)};
     static std::vector<int> iosig(ios, ios+sizeof(ios)/sizeof(int));
     pfb_oqpsk_clock_sync_cc_impl::pfb_oqpsk_clock_sync_cc_impl(double sps, float loop_bw, 
     					   const std::vector<float> &taps, 
@@ -135,7 +135,7 @@ namespace gr {
     bool
     pfb_oqpsk_clock_sync_cc_impl::check_topology(int ninputs, int noutputs)
     {
-      return noutputs == 2 || noutputs == 5;
+      return noutputs == 1 || noutputs == 4;
     }
 
     void
@@ -443,7 +443,6 @@ namespace gr {
     {
       gr_complex *in = (gr_complex *) input_items[0];
       gr_complex *out = (gr_complex *) output_items[0];
-      gr_complex *out1 = (gr_complex *) output_items[1];
       unsigned int noi = (unsigned int)(noutput_items + history()) * (d_sps/d_osps);
       unsigned int alignment = volk_get_alignment();
       float *in_real = (float *)volk_malloc(sizeof(float)*noi, alignment);
@@ -462,7 +461,7 @@ namespace gr {
       }
 
       float *err = NULL, *outrate = NULL, *outk = NULL;
-      if(output_items.size() == 5) {
+      if(output_items.size() == 4) {
 	err = (float *) output_items[1];
 	outrate = (float*)output_items[2];
 	outk = (float*)output_items[3];
@@ -491,10 +490,6 @@ namespace gr {
         if(count+d_count_dist <= noi) {
           out[i].real(d_filters[d_filtnum_r]->filter(&in_real[count]));
           out[i].imag(d_filters[d_filtnum_i]->filter(&in_imag[count+d_count_dist]));
-          
-          //co sample output needed for phase estimation (following block)
-          out1[i].real(d_filters[d_filtnum_i]->filter(&in_imag[count+d_count_dist]));
-          out1[i].imag(d_filters[d_filtnum_r]->filter(&in_real[count]));
         }
         else {
           consume_each(count);
@@ -505,7 +500,7 @@ namespace gr {
           
         d_k_r = d_k_r + d_rate_r_i + d_rate_r_f; // update phase
 
-        if(output_items.size() == 5) {
+        if(output_items.size() == 4) {
           err[i] = d_error_r;
           outrate[i] = d_rate_r_f;
           outk[i] = d_k_r;
