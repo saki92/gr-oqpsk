@@ -41,8 +41,6 @@ namespace gr {
       gr_complex                *bot_b4_filt;
       gr_complex                *top_aft_filt;
       gr_complex                *bot_aft_filt;
-      gr_complex                *top_b4_sum;
-      gr_complex                *bot_b4_sum;
 
      public:
       oqpsk_phase_clock_est_cc_impl(double sps,

@@ -22,7 +22,7 @@
 #include "config.h"
 #endif
 #define _USE_MATH_DEFINES
-#define NL0 100
+#define NL0 1000
 
 #include <cstdio>
 #include <cmath>
@@ -55,7 +55,7 @@ namespace gr {
     oqpsk_phase_clock_est_cc_impl::oqpsk_phase_clock_est_cc_impl(double sps,
                                                                  const std::vector<float> &taps)
       : gr::block("oqpsk_phase_clock_est_cc",
-              gr::io_signature::make(1, 1, sizeof(float)),
+              gr::io_signature::make(1, 1, sizeof(gr_complex)),
               gr::io_signature::makev(1, 3, iosig))
     {
       if(taps.size() == 0)
@@ -70,17 +70,17 @@ namespace gr {
       unsigned int d_qtaps_n = 2 * (taps.size() - 1);
       
       for (int j = 0; j < d_qtaps_n; j++) {
-        d_qtaps[j] = 0;
+        d_qtaps.push_back(0);
         for (int k = 0; k < j + 1; k++)
           d_qtaps[j] += taps[j-k] * gr_expj((j-k)/(2*d_sps)) * taps[k] * gr_expj(k/(2*d_sps));
       }
       d_q_filter->set_taps(d_qtaps);
       
       unsigned int alignment = volk_get_alignment();      
-      gr_complex *top_b4_filt = (gr_complex *)volk_malloc(sizeof(gr_complex)*NL0, alignment);
-      gr_complex *bot_b4_filt = (gr_complex *)volk_malloc(sizeof(gr_complex)*NL0, alignment);
-      gr_complex *top_aft_filt = (gr_complex *)volk_malloc(sizeof(gr_complex)*NL0, alignment);
-      gr_complex *bot_aft_filt = (gr_complex *)volk_malloc(sizeof(gr_complex)*NL0, alignment);  
+      top_b4_filt = (gr_complex *)volk_malloc(sizeof(gr_complex)*NL0, alignment);
+      bot_b4_filt = (gr_complex *)volk_malloc(sizeof(gr_complex)*NL0, alignment);
+      top_aft_filt = (gr_complex *)volk_malloc(sizeof(gr_complex)*NL0, alignment);
+      bot_aft_filt = (gr_complex *)volk_malloc(sizeof(gr_complex)*NL0, alignment);  
       
       set_history(d_qtaps_n + d_sps + d_sps);
       
